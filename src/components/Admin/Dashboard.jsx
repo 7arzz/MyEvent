@@ -168,6 +168,8 @@ const Dashboard = ({ data, onUpdate, onLogout }) => {
       <nav
         style={{
           padding: "1rem 2rem",
+          flexWrap: "wrap",
+          gap: "0.5rem",
           backgroundColor: "#fff",
           borderBottom: "1px solid #f1f2f6",
           display: "flex",
@@ -252,6 +254,7 @@ const Dashboard = ({ data, onUpdate, onLogout }) => {
         style={{
           flex: 1,
           display: "flex",
+          flexDirection: window.innerWidth < 768 ? "column" : "row",
           overflow: "hidden",
           backgroundColor: "#fafbfc",
         }}
@@ -260,7 +263,10 @@ const Dashboard = ({ data, onUpdate, onLogout }) => {
         {!previewMode && (
           <div
             style={{
-              width: "240px",
+              width: window.innerWidth < 768 ? "100%" : "240px",
+              display: "flex",
+              flexDirection: window.innerWidth < 768 ? "row" : "column",
+              overflowX: "auto",
               backgroundColor: "#fff",
               borderRight: "1px solid #f1f2f6",
               padding: "2rem 0",
@@ -290,13 +296,24 @@ const Dashboard = ({ data, onUpdate, onLogout }) => {
               active={activeTab === "location"}
               onClick={() => setActiveTab("location")}
             />
-            <SidebarLink icon={Mail} label="Kontak Footer" active={activeTab === 'rsvp'} onClick={() => setActiveTab('rsvp')} />
+            <SidebarLink
+              icon={Mail}
+              label="Kontak Footer"
+              active={activeTab === "rsvp"}
+              onClick={() => setActiveTab("rsvp")}
+            />
           </div>
         )}
 
         {/* Form Container */}
         {!previewMode ? (
-          <div style={{ flex: 1, overflowY: "auto", padding: "2rem" }}>
+          <div
+            style={{
+              flex: 1,
+              overflowY: "auto",
+              padding: window.innerWidth < 768 ? "1rem" : "2rem",
+            }}
+          >
             <div
               style={{
                 maxWidth: "800px",
@@ -341,7 +358,8 @@ const Dashboard = ({ data, onUpdate, onLogout }) => {
                 <div
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
+                    gridTemplateColumns:
+                      window.innerWidth < 768 ? "1fr" : "1fr 1fr",
                     gap: "1rem",
                   }}
                 >
@@ -511,9 +529,15 @@ const Dashboard = ({ data, onUpdate, onLogout }) => {
                 </p>
               </FormSection>
 
-              <FormSection title="Kontak Footer" show={activeTab === 'rsvp'}>
-                <div style={{ paddingTop: '0' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <FormSection title="Kontak Footer" show={activeTab === "rsvp"}>
+                <div style={{ paddingTop: "0" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "1rem",
+                    }}
+                  >
                     <InputField
                       label="Email"
                       value={formData.contact.email}
@@ -597,6 +621,15 @@ const Dashboard = ({ data, onUpdate, onLogout }) => {
           ::-webkit-scrollbar-track { background: #f1f1f1; }
           ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
           ::-webkit-scrollbar-thumb:hover { background: #6c5ce7; }
+          @media (max-width: 768px) {
+              nav {
+                padding: 1rem !important;
+              }
+
+              button {
+                width: 100%;
+              }
+            }
         `}
       </style>
     </div>
