@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
   LogOut,
-  Save,
+  Link as LinkIcon,
   Plus,
   Trash2,
   Layout,
@@ -13,6 +13,8 @@ import {
   Phone,
   Eye,
   Edit3,
+  Copy,
+  Check,
 } from "lucide-react";
 import Hero from "../Hero";
 import EventInfo from "../EventInfo";
@@ -20,6 +22,7 @@ import Countdown from "../Countdown";
 import Timeline from "../Timeline";
 import Map from "../Map";
 import Footer from "../Footer";
+import { encodeData } from "../../utils/urlData";
 
 const SidebarLink = ({ icon: Icon, label, active, onClick }) => (
   <button
@@ -120,10 +123,8 @@ const Dashboard = ({ data, onUpdate, onLogout }) => {
   const [formData, setFormData] = useState(data);
   const [activeTab, setActiveTab] = useState("hero");
   const [previewMode, setPreviewMode] = useState(false);
-
-  // Sync for real-time preview (within the dashboard session)
-  // Actually, onUpdate should be called when "Save" is clicked or debounced.
-  // The user asked for "live preview" while editing.
+  const [generatedLink, setGeneratedLink] = useState("");
+  const [copied, setCopied] = useState(false);
 
   const handleChange = (section, field, value) => {
     const updated = { ...formData };
@@ -133,12 +134,14 @@ const Dashboard = ({ data, onUpdate, onLogout }) => {
       updated[field] = value;
     }
     setFormData(updated);
+    onUpdate(updated); // Update parent state for real-time preview
   };
 
   const handleAgendaChange = (index, field, value) => {
     const updated = { ...formData };
     updated.agenda[index] = { ...updated.agenda[index], [field]: value };
     setFormData(updated);
+    onUpdate(updated);
   };
 
   const addAgendaItem = () => {
@@ -149,21 +152,116 @@ const Dashboard = ({ data, onUpdate, onLogout }) => {
       description: "",
     });
     setFormData(updated);
+    onUpdate(updated);
   };
 
   const removeAgendaItem = (index) => {
     const updated = { ...formData };
     updated.agenda = updated.agenda.filter((_, i) => i !== index);
     setFormData(updated);
+    onUpdate(updated);
   };
 
-  const handleSave = () => {
-    onUpdate(formData);
-    alert("Data berhasil disimpan dan dipublikasikan!");
+  const handleGenerateLink = () => {
+    const encoded = encodeData(formData);
+    const baseUrl = window.location.origin + window.location.pathname.replace("/admin", "");
+    const link = `${baseUrl}?d=${encoded}`;
+    setGeneratedLink(link);
+    setCopied(false);
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(generatedLink);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
     <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
+      {/* Link Overlay Modal */}
+      {generatedLink && (
+        <div style={{
+          position: "fixed",
+          inset: 0,
+          backgroundColor: "rgba(0,0,0,0.5)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 1000,
+          padding: "1rem"
+        }}>
+          <div style={{
+            backgroundColor: "#fff",
+            padding: "2rem",
+            borderRadius: "16px",
+            maxWidth: "600px",
+            width: "100%",
+            boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1)"
+          }}>
+            <h3 style={{ marginBottom: "1rem" }}>Link Undangan Anda</h3>
+            <p style={{ fontSize: "0.9rem", color: "#636e72", marginBottom: "1.5rem" }}>
+              Salin link di bawah ini untuk dibagikan. Karena sistem ini tidak menggunakan database, 
+              link ini berisi data undangan Anda.
+            </p>
+            <div style={{ 
+              display: "flex", 
+              gap: "0.5rem", 
+              backgroundColor: "#f1f2f6", 
+              padding: "0.5rem", 
+              borderRadius: "8px",
+              alignItems: "center"
+            }}>
+              <input 
+                readOnly 
+                value={generatedLink} 
+                style={{
+                  flex: 1,
+                  background: "none",
+                  border: "none",
+                  fontSize: "0.8rem",
+                  padding: "0.5rem",
+                  outline: "none",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis"
+                }}
+              />
+              <button 
+                onClick={copyToClipboard}
+                style={{
+                  padding: "10px",
+                  borderRadius: "6px",
+                  border: "none",
+                  backgroundColor: copied ? "#00b894" : "#6c5ce7",
+                  color: "#fff",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.4rem"
+                }}
+              >
+                {copied ? <Check size={16} /> : <Copy size={16} />}
+                {copied ? "Tersalin" : "Salin"}
+              </button>
+            </div>
+            <button 
+              onClick={() => setGeneratedLink("")}
+              style={{
+                marginTop: "1.5rem",
+                width: "100%",
+                padding: "12px",
+                borderRadius: "8px",
+                border: "1px solid #dfe6e9",
+                backgroundColor: "#fff",
+                cursor: "pointer",
+                fontWeight: 600
+              }}
+            >
+              Tutup
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Navbar Admn */}
       <nav
         style={{
@@ -214,7 +312,7 @@ const Dashboard = ({ data, onUpdate, onLogout }) => {
             {previewMode ? "Edit Kembali" : "Lihat Preview"}
           </button>
           <button
-            onClick={handleSave}
+            onClick={handleGenerateLink}
             style={{
               display: "flex",
               alignItems: "center",
@@ -229,8 +327,8 @@ const Dashboard = ({ data, onUpdate, onLogout }) => {
               boxShadow: "0 4px 10px rgba(108, 92, 231, 0.2)",
             }}
           >
-            <Save size={16} />
-            Simpan & Publish
+            <LinkIcon size={16} />
+            Generate Link
           </button>
           <button
             onClick={onLogout}
@@ -248,6 +346,7 @@ const Dashboard = ({ data, onUpdate, onLogout }) => {
           </button>
         </div>
       </nav>
+
 
       {/* Main Content */}
       <div
