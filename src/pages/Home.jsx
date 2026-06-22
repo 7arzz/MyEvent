@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import Envelope from "../components/Envelope";
-import ThemeToggle from "../components/ThemeToggle";
 import Hero from "../components/Hero";
 import Countdown from "../components/Countdown";
 import EventInfo from "../components/EventInfo";
@@ -26,26 +25,21 @@ const Home = ({ data }) => {
       
       {opened && (
         <React.Fragment>
-      <ThemeToggle />
+          <Hero
+            title={data.hero.title}
+            subtitle={data.hero.subtitle}
+            imageUrl={data.hero.imageUrl}
+          />
 
-      <Hero
-        title={data.hero.title}
-        subtitle={data.hero.subtitle}
-        imageUrl={data.hero.imageUrl}
-      />
+          <Countdown targetDate={data.targetDate} />
 
-      <Countdown targetDate={data.targetDate} />
+          <EventInfo eventData={data.event} />
 
-      <EventInfo eventData={data.event} />
+          <Timeline agenda={data.agenda} />
 
-      <Timeline agenda={data.agenda} />
+          <Map location={data.location} />
 
-      <Map location={data.location} />
-
-
-
-      <Footer contact={data.contact} />
-
+          <Footer contact={data.contact} />
         </React.Fragment>
       )}
 
