@@ -55,10 +55,11 @@ const Envelope = ({ onOpen, title, subtitle }) => {
         <div style={{
           position: "absolute",
           inset: 0,
-          background: "linear-gradient(145deg, #e74c3c, #c0392b)",
+          background: "linear-gradient(145deg, #ffffff, #f0f0f0)",
           borderRadius: "10px",
-          boxShadow: "0 20px 40px rgba(0,0,0,0.4)",
-          zIndex: 1
+          boxShadow: "0 20px 40px rgba(0,0,0,0.2)",
+          zIndex: 1,
+          border: "1px solid #e0e0e0"
         }} />
 
         {/* PAPER */}
@@ -72,9 +73,9 @@ const Envelope = ({ onOpen, title, subtitle }) => {
             left: "20px",
             width: "320px",
             height: "210px",
-            background: "#fffdf2",
+            background: "#fff",
             borderRadius: "8px",
-            boxShadow: "0 5px 15px rgba(0,0,0,0.2), inset 0 0 20px rgba(0,0,0,0.05)",
+            boxShadow: "0 5px 15px rgba(0,0,0,0.1), inset 0 0 20px rgba(0,0,0,0.02)",
             zIndex: 2,
             padding: "25px 20px",
             boxSizing: "border-box",
@@ -82,19 +83,20 @@ const Envelope = ({ onOpen, title, subtitle }) => {
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            textAlign: "center"
+            textAlign: "center",
+            border: "1px solid #f0f0f0"
           }}
         >
-          <h2 style={{ color: "#c0392b", margin: "0 0 10px 0", fontSize: "1.2rem", borderBottom: "2px solid #f39c12", paddingBottom: "5px", width: "100%" }}>
+          <h2 style={{ color: "#2d3436", margin: "0 0 10px 0", fontSize: "1.2rem", borderBottom: "2px solid #6c5ce7", paddingBottom: "5px", width: "100%" }}>
             Undangan Spesial
           </h2>
-          <p style={{ color: "#444", fontSize: "0.9rem", lineHeight: 1.5, margin: 0, fontWeight: 600 }}>
+          <p style={{ color: "#2d3436", fontSize: "0.9rem", lineHeight: 1.5, margin: 0, fontWeight: 600 }}>
             {title}
           </p>
-          <p style={{ color: "#666", fontSize: "0.75rem", marginTop: "10px" }}>
+          <p style={{ color: "#636e72", fontSize: "0.75rem", marginTop: "10px" }}>
             {subtitle}
           </p>
-          <div style={{ marginTop: "15px", color: "#f39c12", fontSize: "0.8rem", fontStyle: "italic" }}>
+          <div style={{ marginTop: "15px", color: "#6c5ce7", fontSize: "0.8rem", fontStyle: "italic" }}>
             Tunggu sebentar...
           </div>
         </motion.div>
@@ -103,20 +105,23 @@ const Envelope = ({ onOpen, title, subtitle }) => {
         {/* Left */}
         <div style={{
           position: "absolute", inset: 0, zIndex: 4, borderRadius: "10px",
-          background: "linear-gradient(90deg, #d35400, #e67e22)",
+          background: "linear-gradient(90deg, #fdfdfd, #f5f5f5)",
           clipPath: "polygon(0 0, 50% 50%, 0 100%)",
+          boxShadow: "2px 0 5px rgba(0,0,0,0.02)"
         }} />
         {/* Right */}
         <div style={{
           position: "absolute", inset: 0, zIndex: 4, borderRadius: "10px",
-          background: "linear-gradient(-90deg, #d35400, #e67e22)",
+          background: "linear-gradient(-90deg, #fdfdfd, #f5f5f5)",
           clipPath: "polygon(100% 0, 50% 50%, 100% 100%)",
+          boxShadow: "-2px 0 5px rgba(0,0,0,0.02)"
         }} />
         {/* Bottom */}
         <div style={{
           position: "absolute", inset: 0, zIndex: 5, borderRadius: "10px",
-          background: "linear-gradient(0deg, #e67e22, #f39c12)",
+          background: "linear-gradient(0deg, #f5f5f5, #ffffff)",
           clipPath: "polygon(0 100%, 50% 50%, 100% 100%)",
+          boxShadow: "0 -2px 5px rgba(0,0,0,0.02)"
         }} />
 
         {/* TOP FLAP */}
@@ -130,11 +135,12 @@ const Envelope = ({ onOpen, title, subtitle }) => {
             left: 0,
             width: "100%",
             height: "100%",
-            background: "linear-gradient(180deg, #e74c3c, #e67e22)",
+            background: "linear-gradient(180deg, #ffffff, #f9f9f9)",
             clipPath: "polygon(0 0, 100% 0, 50% 50%)",
             transformOrigin: "top center",
             zIndex: isOpen ? 1 : 6,
             borderRadius: "10px",
+            borderTop: "1px solid #f0f0f0"
           }}
         />
 
@@ -164,6 +170,7 @@ const Envelope = ({ onOpen, title, subtitle }) => {
           whileHover={!isOpening ? { scale: 1.1 } : {}}
         />
       </div>
+
 
       <style>
         {`

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   LogOut,
   Link as LinkIcon,
@@ -15,7 +15,10 @@ import {
   Edit3,
   Copy,
   Check,
+  QrCode,
+  Download,
 } from "lucide-react";
+import { QRCodeCanvas } from "qrcode.react";
 import Hero from "../Hero";
 import EventInfo from "../EventInfo";
 import Countdown from "../Countdown";
@@ -125,6 +128,7 @@ const Dashboard = ({ data, onUpdate, onLogout }) => {
   const [previewMode, setPreviewMode] = useState(false);
   const [generatedLink, setGeneratedLink] = useState("");
   const [copied, setCopied] = useState(false);
+  const qrRef = useRef(null);
 
   const handleChange = (section, field, value) => {
     const updated = { ...formData };
@@ -176,6 +180,21 @@ const Dashboard = ({ data, onUpdate, onLogout }) => {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const downloadQR = () => {
+    const canvas = document.getElementById("qr-code");
+    if (canvas) {
+      const pngUrl = canvas
+        .toDataURL("image/png")
+        .replace("image/png", "image/octet-stream");
+      let downloadLink = document.createElement("a");
+      downloadLink.href = pngUrl;
+      downloadLink.download = "qr-invitation.png";
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    }
+  };
+
   return (
     <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
       {/* Link Overlay Modal */}
@@ -193,23 +212,37 @@ const Dashboard = ({ data, onUpdate, onLogout }) => {
           <div style={{
             backgroundColor: "#fff",
             padding: "2rem",
-            borderRadius: "16px",
-            maxWidth: "600px",
+            borderRadius: "24px",
+            maxWidth: "500px",
             width: "100%",
-            boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1)"
+            boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1)",
+            textAlign: "center"
           }}>
-            <h3 style={{ marginBottom: "1rem" }}>Link Undangan Anda</h3>
+            <div style={{ display: "flex", justifyContent: "center", marginBottom: "1.5rem" }}>
+                <div style={{ padding: "12px", backgroundColor: "#f8f9fa", borderRadius: "16px", border: "1px solid #eee" }}>
+                    <QRCodeCanvas 
+                        id="qr-code"
+                        value={generatedLink} 
+                        size={180}
+                        level="M"
+                        includeMargin={true}
+                    />
+                </div>
+            </div>
+
+            <h3 style={{ marginBottom: "0.5rem" }}>Undangan Siap Dibagikan!</h3>
             <p style={{ fontSize: "0.9rem", color: "#636e72", marginBottom: "1.5rem" }}>
-              Salin link di bawah ini untuk dibagikan. Karena sistem ini tidak menggunakan database, 
-              link ini berisi data undangan Anda.
+              Scan QR di atas atau gunakan link di bawah ini.
             </p>
+
             <div style={{ 
               display: "flex", 
               gap: "0.5rem", 
               backgroundColor: "#f1f2f6", 
               padding: "0.5rem", 
-              borderRadius: "8px",
-              alignItems: "center"
+              borderRadius: "12px",
+              alignItems: "center",
+              marginBottom: "1rem"
             }}>
               <input 
                 readOnly 
@@ -228,36 +261,60 @@ const Dashboard = ({ data, onUpdate, onLogout }) => {
               <button 
                 onClick={copyToClipboard}
                 style={{
-                  padding: "10px",
-                  borderRadius: "6px",
+                  padding: "8px 16px",
+                  borderRadius: "8px",
                   border: "none",
                   backgroundColor: copied ? "#00b894" : "#6c5ce7",
                   color: "#fff",
                   cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
-                  gap: "0.4rem"
+                  gap: "0.4rem",
+                  fontSize: "0.85rem",
+                  fontWeight: 600
                 }}
               >
-                {copied ? <Check size={16} /> : <Copy size={16} />}
-                {copied ? "Tersalin" : "Salin"}
+                {copied ? <Check size={14} /> : <Copy size={14} />}
+                {copied ? "Salin" : "Salin"}
               </button>
             </div>
-            <button 
-              onClick={() => setGeneratedLink("")}
-              style={{
-                marginTop: "1.5rem",
-                width: "100%",
-                padding: "12px",
-                borderRadius: "8px",
-                border: "1px solid #dfe6e9",
-                backgroundColor: "#fff",
-                cursor: "pointer",
-                fontWeight: 600
-              }}
-            >
-              Tutup
-            </button>
+
+            <div style={{ display: "flex", gap: "1rem" }}>
+                <button 
+                    onClick={downloadQR}
+                    style={{
+                        flex: 1,
+                        padding: "12px",
+                        borderRadius: "12px",
+                        border: "1px solid #dfe6e9",
+                        backgroundColor: "#fff",
+                        color: "#2d3436",
+                        cursor: "pointer",
+                        fontWeight: 600,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "0.5rem"
+                    }}
+                >
+                    <Download size={16} /> Download QR
+                </button>
+                <button 
+                    onClick={() => setGeneratedLink("")}
+                    style={{
+                        flex: 1,
+                        padding: "12px",
+                        borderRadius: "12px",
+                        border: "none",
+                        backgroundColor: "#2d3436",
+                        color: "#fff",
+                        cursor: "pointer",
+                        fontWeight: 600
+                    }}
+                >
+                    Tutup
+                </button>
+            </div>
           </div>
         </div>
       )}
@@ -346,6 +403,7 @@ const Dashboard = ({ data, onUpdate, onLogout }) => {
           </button>
         </div>
       </nav>
+
 
 
       {/* Main Content */}
