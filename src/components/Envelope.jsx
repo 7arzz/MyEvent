@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const Envelope = ({ onOpen, title, subtitle }) => {
+const Envelope = ({ onOpen, title, subtitle, sealUrl }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpening, setIsOpening] = useState(false);
 
