@@ -1,5 +1,48 @@
-// src/utils/urlData.js
 import pako from 'pako';
+import { DEFAULT_INVITATION_DATA } from '../data';
+
+// Helper to deeply remove properties that match default values
+const pruneDefaults = (data, defaults) => {
+  const pruned = {};
+  for (const key in data) {
+    if (Array.isArray(data[key])) {
+      // For arrays (like agenda), we still keep them but check content
+      // Actually, for simplicity we keep arrays as is if they are different from defaults
+      if (JSON.stringify(data[key]) !== JSON.stringify(defaults[key])) {
+        pruned[key] = data[key];
+      }
+    } else if (typeof data[key] === 'object' && data[key] !== null) {
+      const subPruned = pruneDefaults(data[key], defaults[key] || {});
+      if (Object.keys(subPruned).length > 0) {
+        pruned[key] = subPruned;
+      }
+    } else {
+      if (data[key] !== defaults[key]) {
+        pruned[key] = data[key];
+      }
+    }
+  }
+  return pruned;
+};
+
+// Helper to merge pruned data back with defaults
+const mergeDefaults = (data, defaults) => {
+  const merged = { ...defaults };
+  for (const key in data) {
+    if (Array.isArray(data[key])) {
+      merged[key] = data[key];
+    } else if (typeof data[key] === 'object' && data[key] !== null) {
+      merged[key] = mergeDefaults(data[key], defaults[key] || {});
+    } else {
+      merged[key] = data[key];
+    }
+  }
+  return merged;
+};
+
+// Agenda as array of arrays: [time, title, desc]
+const compactAgenda = (agenda) => agenda.map(item => [item.time, item.title, item.description]);
+const expandAgenda = (compact) => compact.map(item => ({ time: item[0], title: item[1], description: item[2] }));
 
 const KEY_MAP = {
   hero: 'h',
@@ -13,7 +56,6 @@ const KEY_MAP = {
   locationName: 'ln',
   targetDate: 'td',
   agenda: 'a',
-  description: 'ds',
   location: 'l',
   address: 'ad',
   mapUrl: 'mu',
@@ -25,83 +67,67 @@ const KEY_MAP = {
   facebook: 'fb'
 };
 
-const REVERSE_MAP = Object.fromEntries(
-  Object.entries(KEY_MAP).map(([k, v]) => [v, k])
-);
+const REVERSE_MAP = Object.fromEntries(Object.entries(KEY_MAP).map(([k, v]) => [v, k]));
 
 const transformKeys = (obj, map) => {
-  if (Array.isArray(obj)) {
-    return obj.map(item => transformKeys(item, map));
-  }
+  if (Array.isArray(obj)) return obj.map(item => transformKeys(item, map));
   if (obj !== null && typeof obj === 'object') {
-    return Object.fromEntries(
-      Object.entries(obj).map(([k, v]) => [
-        map[k] || k,
-        transformKeys(v, map)
-      ])
-    );
+    return Object.fromEntries(Object.entries(obj).map(([k, v]) => [map[k] || k, transformKeys(v, map)]));
   }
   return obj;
 };
 
 export const encodeData = (data) => {
   try {
-    // 1. Transform keys to shorter versions
-    const shortData = transformKeys(data, KEY_MAP);
+    // 1. Prune values that are same as defaults
+    let processedData = pruneDefaults(data, DEFAULT_INVITATION_DATA);
     
-    // 2. Stringify
+    // 2. Compact agenda if present
+    if (processedData.agenda) {
+      processedData.agenda = compactAgenda(processedData.agenda);
+    }
+
+    // 3. Transform keys
+    const shortData = transformKeys(processedData, KEY_MAP);
+    
+    // 4. Compress
     const jsonString = JSON.stringify(shortData);
-    
-    // 3. Compress using pako
     const compressed = pako.deflate(jsonString);
     
-    // 4. Convert Uint8Array to binary string
+    // 5. Binary to string
     let binary = '';
-    const len = compressed.byteLength;
-    for (let i = 0; i < len; i++) {
-      binary += String.fromCharCode(compressed[i]);
-    }
+    for (let i = 0; i < compressed.byteLength; i++) binary += String.fromCharCode(compressed[i]);
     
-    // 5. Encode to base64 and make it URL safe
-    return btoa(binary)
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=+$/, '');
+    // 6. Base64
+    return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   } catch (error) {
-    console.error("Encoding error:", error);
     return null;
   }
 };
 
 export const decodeData = (encodedData) => {
   try {
-    // 1. Restore base64 characters and padding
-    let base64 = encodedData
-      .replace(/-/g, '+')
-      .replace(/_/g, '/');
-    while (base64.length % 4) {
-      base64 += '=';
-    }
-    
-    // 2. Decode base64 to binary string
+    let base64 = encodedData.replace(/-/g, '+').replace(/_/g, '/');
+    while (base64.length % 4) base64 += '=';
     const binary = atob(base64);
-    
-    // 3. Convert binary string to Uint8Array
     const bytes = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) {
-      bytes[i] = binary.charCodeAt(i);
-    }
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
     
-    // 4. Decompress using pako
     const decompressed = pako.inflate(bytes, { to: 'string' });
-    
-    // 5. Parse JSON
     const shortData = JSON.parse(decompressed);
     
-    // 6. Transform keys back to original
-    return transformKeys(shortData, REVERSE_MAP);
+    // 1. Reverse keys
+    let processedData = transformKeys(shortData, REVERSE_MAP);
+    
+    // 2. Expand agenda
+    if (processedData.agenda) {
+      processedData.agenda = expandAgenda(processedData.agenda);
+    }
+    
+    // 3. Merge with defaults
+    return mergeDefaults(processedData, DEFAULT_INVITATION_DATA);
   } catch (error) {
-    console.error("Decoding error:", error);
     return null;
   }
 };
+
