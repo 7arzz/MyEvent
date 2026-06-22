@@ -506,7 +506,16 @@ const Dashboard = ({ data, onUpdate, onLogout }) => {
                   }
                   placeholder="https://example.com/logo.png"
                 />
+                <InputField
+                  label="Seal Logo URL (Logo di Amplop)"
+                  value={formData.hero.sealUrl}
+                  onChange={(e) =>
+                    handleChange("hero", "sealUrl", e.target.value)
+                  }
+                  placeholder="Kosongkan untuk Bintang default"
+                />
               </FormSection>
+
 
               <FormSection
                 title="Event Info & Countdown"

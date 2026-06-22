@@ -19,8 +19,10 @@ const Home = ({ data }) => {
             onOpen={() => setOpened(true)} 
             title={data.hero.title} 
             subtitle={data.hero.subtitle}
+            sealUrl={data.hero.sealUrl}
           />
         )}
+
       </AnimatePresence>
       
       {opened && (

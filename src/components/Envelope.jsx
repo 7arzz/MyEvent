@@ -41,14 +41,20 @@ const Envelope = ({ onOpen, title, subtitle }) => {
         perspective: "1500px",
       }}
     >
-      <div style={{ marginBottom: "2rem", textAlign: "center", color: "white" }}>
-        <motion.h2 
-          animate={{ opacity: isOpen ? 0 : 1 }}
-          style={{ fontSize: "1.5rem", fontWeight: 700, textShadow: "0 2px 4px rgba(0,0,0,0.3)" }}
-        >
-          {isOpen ? "Membuka Undangan..." : "Klik Bintang untuk Membuka"}
-        </motion.h2>
-      </div>
+      <motion.p
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        style={{
+          color: "#fff",
+          fontSize: "1.2rem",
+          fontWeight: 700,
+          marginBottom: "2rem",
+          textAlign: "center",
+          textShadow: "0 2px 4px rgba(0,0,0,0.3)"
+        }}
+      >
+        Klik logo untuk Membuka
+      </motion.p>
 
       <div style={{ position: "relative", width: "360px", height: "240px", perspective: "1500px" }}>
         {/* BACK PART */}
@@ -57,7 +63,7 @@ const Envelope = ({ onOpen, title, subtitle }) => {
           inset: 0,
           background: "linear-gradient(145deg, #ffffff, #f0f0f0)",
           borderRadius: "10px",
-          boxShadow: "0 20px 40px rgba(0,0,0,0.2)",
+          boxShadow: "0 20px 40px rgba(0,0,0,0.4)",
           zIndex: 1,
           border: "1px solid #e0e0e0"
         }} />
@@ -107,21 +113,18 @@ const Envelope = ({ onOpen, title, subtitle }) => {
           position: "absolute", inset: 0, zIndex: 4, borderRadius: "10px",
           background: "linear-gradient(90deg, #fdfdfd, #f5f5f5)",
           clipPath: "polygon(0 0, 50% 50%, 0 100%)",
-          boxShadow: "2px 0 5px rgba(0,0,0,0.02)"
         }} />
         {/* Right */}
         <div style={{
           position: "absolute", inset: 0, zIndex: 4, borderRadius: "10px",
           background: "linear-gradient(-90deg, #fdfdfd, #f5f5f5)",
           clipPath: "polygon(100% 0, 50% 50%, 100% 100%)",
-          boxShadow: "-2px 0 5px rgba(0,0,0,0.02)"
         }} />
         {/* Bottom */}
         <div style={{
           position: "absolute", inset: 0, zIndex: 5, borderRadius: "10px",
           background: "linear-gradient(0deg, #f5f5f5, #ffffff)",
           clipPath: "polygon(0 100%, 50% 50%, 100% 100%)",
-          boxShadow: "0 -2px 5px rgba(0,0,0,0.02)"
         }} />
 
         {/* TOP FLAP */}
@@ -144,7 +147,7 @@ const Envelope = ({ onOpen, title, subtitle }) => {
           }}
         />
 
-        {/* STAR BUTTON */}
+        {/* SEAL LOGO */}
         <motion.div
           onClick={handleOpen}
           initial={{ rotate: 0, x: "-50%", y: "-50%", scale: 1 }}
@@ -159,23 +162,38 @@ const Envelope = ({ onOpen, title, subtitle }) => {
             position: "absolute",
             top: "50%",
             left: "50%",
-            width: "60px",
-            height: "60px",
-            background: "radial-gradient(circle, #f1c40f, #f39c12)",
-            clipPath: "polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)",
+            width: "70px",
+            height: "70px",
             zIndex: 100,
             cursor: isOpening ? "default" : "pointer",
-            filter: "drop-shadow(0 4px 5px rgba(0,0,0,0.4))",
+            filter: "drop-shadow(0 4px 10px rgba(0,0,0,0.3))",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center"
           }}
           whileHover={!isOpening ? { scale: 1.1 } : {}}
-        />
+        >
+          {sealUrl ? (
+            <img 
+              src={sealUrl} 
+              alt="Seal" 
+              style={{ width: "100%", height: "100%", objectFit: "contain", borderRadius: "50%" }} 
+            />
+          ) : (
+            <div style={{
+              width: "100%",
+              height: "100%",
+              background: "radial-gradient(circle, #f1c40f, #f39c12)",
+              clipPath: "polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)",
+            }} />
+          )}
+        </motion.div>
       </div>
 
 
       <style>
         {`
           body { 
-            overflow: hidden !important; 
             touch-action: none;
           }
         `}

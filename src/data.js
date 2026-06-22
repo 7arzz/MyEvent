@@ -2,8 +2,10 @@ export const DEFAULT_INVITATION_DATA = {
   hero: {
     title: "🌟 Undangan Digital Premium 🌟",
     subtitle: "Merayakan Kebersamaan di Hari Istimewa Kita",
-    imageUrl: ""
+    imageUrl: "",
+    sealUrl: ""
   },
+
   event: {
     day: "Sabtu",
     date: "17 Oktober 2026",
