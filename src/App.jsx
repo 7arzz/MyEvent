@@ -53,7 +53,14 @@ function AppContent() {
 
   return (
     <Routes>
-      <Route path="/" element={<Home data={invitationData} />} />
+      <Route 
+        path="/" 
+        element={
+          new URLSearchParams(window.location.search).get("d") 
+            ? <Home data={invitationData} /> 
+            : <Navigate to="/admin" replace />
+        } 
+      />
       <Route
         path="/admin"
         element={
@@ -66,9 +73,10 @@ function AppContent() {
           />
         }
       />
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<Navigate to="/admin" replace />} />
     </Routes>
   );
+
 }
 
 function App() {
