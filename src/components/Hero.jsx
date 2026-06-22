@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-const Hero = ({ title, subtitle, imageUrl }) => {
+const Hero = ({ title, subtitle }) => {
   return (
     <section 
       style={{
@@ -64,16 +64,9 @@ const Hero = ({ title, subtitle, imageUrl }) => {
           backgroundColor: 'var(--card-bg)'
         }}
       >
-        {imageUrl ? (
-          <img 
-            src={imageUrl} 
-            alt="Event Logo" 
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-          />
-        ) : (
-          <div style={{ fontSize: '4rem' }}>💌</div>
-        )}
+        <div style={{ fontSize: '4rem' }}>💌</div>
       </motion.div>
+
 
       <motion.h1
         initial={{ opacity: 0, y: 20 }}

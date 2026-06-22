@@ -45,12 +45,13 @@ const compactAgenda = (agenda) => agenda.map(item => [item.time, item.title, ite
 const expandAgenda = (compact) => compact.map(item => ({ time: item[0], title: item[1], description: item[2] }));
 
 const KEY_MAP = {
-  hero: 'h', title: 't', subtitle: 's', imageUrl: 'i', sealUrl: 'sl',
+  hero: 'h', title: 't', subtitle: 's',
   event: 'e', day: 'd', date: 'dt', time: 'tm', locationName: 'ln',
   targetDate: 'td', agenda: 'a',
   location: 'l', address: 'ad', mapUrl: 'mu', embedUrl: 'eu',
   contact: 'c', email: 'em', phone: 'ph', instagram: 'ig', facebook: 'fb'
 };
+
 
 
 const REVERSE_MAP = Object.fromEntries(Object.entries(KEY_MAP).map(([k, v]) => [v, k]));

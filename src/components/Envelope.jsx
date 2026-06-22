@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const Envelope = ({ onOpen, title, subtitle, sealUrl }) => {
+const Envelope = ({ onOpen, title, subtitle }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpening, setIsOpening] = useState(false);
 
@@ -9,36 +9,23 @@ const Envelope = ({ onOpen, title, subtitle, sealUrl }) => {
     if (isOpening) return;
     setIsOpening(true);
     setIsOpen(true);
-    
-    // Sequence of animations: 
-    // 1. Star button moves (handled by motion)
-    // 2. Top flap opens (handled by motion)
-    // 3. Paper slides out
-    // 4. Finally call onOpen to transition to Home
     setTimeout(() => {
       onOpen();
-    }, 2500); 
+    }, 2000);
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+    <div
       style={{
         position: "fixed",
         inset: 0,
-        width: "100vw",
-        height: "100vh",
-        backgroundColor: "var(--bg)",
-        zIndex: 2000,
+        backgroundColor: "#2c3e50", // Dark gray background
+        background: "radial-gradient(circle, #34495e 0%, #2c3e50 100%)",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        overflow: "hidden",
-        background: "linear-gradient(135deg, #1f1c2c 0%, #928dab 100%)",
-        perspective: "1500px",
+        zIndex: 9999,
       }}
     >
       <motion.p
@@ -108,19 +95,16 @@ const Envelope = ({ onOpen, title, subtitle, sealUrl }) => {
         </motion.div>
 
         {/* FRONT FLAPS */}
-        {/* Left */}
         <div style={{
           position: "absolute", inset: 0, zIndex: 4, borderRadius: "10px",
           background: "linear-gradient(90deg, #fdfdfd, #f5f5f5)",
           clipPath: "polygon(0 0, 50% 50%, 0 100%)",
         }} />
-        {/* Right */}
         <div style={{
           position: "absolute", inset: 0, zIndex: 4, borderRadius: "10px",
           background: "linear-gradient(-90deg, #fdfdfd, #f5f5f5)",
           clipPath: "polygon(100% 0, 50% 50%, 100% 100%)",
         }} />
-        {/* Bottom */}
         <div style={{
           position: "absolute", inset: 0, zIndex: 5, borderRadius: "10px",
           background: "linear-gradient(0deg, #f5f5f5, #ffffff)",
@@ -147,7 +131,7 @@ const Envelope = ({ onOpen, title, subtitle, sealUrl }) => {
           }}
         />
 
-        {/* SEAL LOGO */}
+        {/* SEAL LOGO (Star) */}
         <motion.div
           onClick={handleOpen}
           initial={{ rotate: 0, x: "-50%", y: "-50%", scale: 1 }}
@@ -164,32 +148,15 @@ const Envelope = ({ onOpen, title, subtitle, sealUrl }) => {
             left: "50%",
             width: "70px",
             height: "70px",
+            background: "radial-gradient(circle, #f1c40f, #f39c12)",
+            clipPath: "polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)",
             zIndex: 100,
             cursor: isOpening ? "default" : "pointer",
             filter: "drop-shadow(0 4px 10px rgba(0,0,0,0.3))",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center"
           }}
           whileHover={!isOpening ? { scale: 1.1 } : {}}
-        >
-          {sealUrl ? (
-            <img 
-              src={sealUrl} 
-              alt="Seal" 
-              style={{ width: "100%", height: "100%", objectFit: "contain", borderRadius: "50%" }} 
-            />
-          ) : (
-            <div style={{
-              width: "100%",
-              height: "100%",
-              background: "radial-gradient(circle, #f1c40f, #f39c12)",
-              clipPath: "polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)",
-            }} />
-          )}
-        </motion.div>
+        />
       </div>
-
 
       <style>
         {`
@@ -198,9 +165,8 @@ const Envelope = ({ onOpen, title, subtitle, sealUrl }) => {
           }
         `}
       </style>
-    </motion.div>
+    </div>
   );
 };
 
 export default Envelope;
-
