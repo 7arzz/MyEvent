@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
-  LogOut,
   Link as LinkIcon,
   Plus,
   Trash2,
@@ -122,7 +121,7 @@ const TextAreaField = ({ label, name, value, onChange, placeholder }) => (
   </div>
 );
 
-const Dashboard = ({ data, onUpdate, onLogout }) => {
+const Dashboard = ({ data, onUpdate }) => {
   const [formData, setFormData] = useState(data);
   const [activeTab, setActiveTab] = useState("hero");
   const [previewMode, setPreviewMode] = useState(false);
@@ -386,20 +385,6 @@ const Dashboard = ({ data, onUpdate, onLogout }) => {
           >
             <LinkIcon size={16} />
             Generate Link
-          </button>
-          <button
-            onClick={onLogout}
-            style={{
-              padding: "8px 12px",
-              backgroundColor: "transparent",
-              color: "#d63031",
-              borderRadius: "8px",
-              border: "1px solid #d63031",
-              cursor: "pointer",
-              fontWeight: 600,
-            }}
-          >
-            <LogOut size={16} />
           </button>
         </div>
       </nav>

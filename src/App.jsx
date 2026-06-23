@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useSearchParams } from "react-router-dom";
 import Home from "./pages/Home";
 import Admin from "./pages/Admin";
 import { DEFAULT_INVITATION_DATA } from "./data";
@@ -7,11 +7,11 @@ import { decodeData, encodeData } from "./utils/urlData";
 
 function AppContent() {
   const [invitationData, setInvitationData] = useState(null);
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     // Check URL parameters for data
-    const params = new URLSearchParams(window.location.search);
-    const encoded = params.get("d");
+    const encoded = searchParams.get("d");
 
     if (encoded) {
       const decoded = decodeData(encoded);
@@ -23,11 +23,7 @@ function AppContent() {
     } else {
       setInvitationData(DEFAULT_INVITATION_DATA);
     }
-  }, []);
-
-  const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    return localStorage.getItem("admin_login") === "true";
-  });
+  }, [searchParams]);
 
   const updateData = (newData) => {
     setInvitationData(newData);
@@ -35,19 +31,7 @@ function AppContent() {
     // but the Admin Dashboard will handle link generation.
   };
 
-  const login = (username, password) => {
-    if (username === "admin" && password === "admin123") {
-      setIsLoggedIn(true);
-      localStorage.setItem("admin_login", "true");
-      return true;
-    }
-    return false;
-  };
-
-  const logout = () => {
-    setIsLoggedIn(false);
-    localStorage.removeItem("admin_login");
-  };
+  const hasDataParam = searchParams.has("d");
 
   if (!invitationData) return <div>Loading...</div>;
 
@@ -56,7 +40,7 @@ function AppContent() {
       <Route 
         path="/" 
         element={
-          new URLSearchParams(window.location.search).get("d") 
+          hasDataParam 
             ? <Home data={invitationData} /> 
             : <Navigate to="/admin" replace />
         } 
@@ -67,9 +51,6 @@ function AppContent() {
           <Admin
             data={invitationData}
             onUpdate={updateData}
-            isLoggedIn={isLoggedIn}
-            onLogin={login}
-            onLogout={logout}
           />
         }
       />
@@ -88,4 +69,3 @@ function App() {
 }
 
 export default App;
-
