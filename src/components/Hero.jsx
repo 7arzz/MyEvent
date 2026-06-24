@@ -45,27 +45,7 @@ const Hero = ({ title, subtitle }) => {
         }}
       />
 
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.8 }}
-        style={{
-          width: '200px',
-          height: '200px',
-          borderRadius: '50%',
-          overflow: 'hidden',
-          marginBottom: '2rem',
-          border: '8px solid var(--card-bg)',
-          boxShadow: 'var(--shadow)',
-          zIndex: 1,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: 'var(--card-bg)'
-        }}
-      >
-        <div style={{ fontSize: '4rem' }}>💌</div>
-      </motion.div>
+
 
 
       <motion.h1

@@ -1,6 +1,6 @@
 export const DEFAULT_INVITATION_DATA = {
   hero: {
-    title: "🌟 Undangan Digital Premium 🌟",
+    title: "Undangan Digital Premium",
     subtitle: "Merayakan Kebersamaan di Hari Istimewa Kita"
   },
 

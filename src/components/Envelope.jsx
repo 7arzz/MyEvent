@@ -19,8 +19,8 @@ const Envelope = ({ onOpen, title, subtitle }) => {
       style={{
         position: "fixed",
         inset: 0,
-        backgroundColor: "#2c3e50", // Dark gray background
-        background: "radial-gradient(circle, #34495e 0%, #2c3e50 100%)",
+        backgroundColor: "#f5f5f5", // Light gray background
+        background: "radial-gradient(circle, #ffffff 0%, #e0e0e0 100%)",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -32,28 +32,37 @@ const Envelope = ({ onOpen, title, subtitle }) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         style={{
-          color: "#fff",
+          color: "#2d3436",
           fontSize: "1.2rem",
           fontWeight: 700,
           marginBottom: "2rem",
           textAlign: "center",
-          textShadow: "0 2px 4px rgba(0,0,0,0.3)"
+          textShadow: "0 1px 2px rgba(255,255,255,0.8)",
         }}
       >
         Klik logo untuk Membuka
       </motion.p>
 
-      <div style={{ position: "relative", width: "360px", height: "240px", perspective: "1500px" }}>
+      <div
+        style={{
+          position: "relative",
+          width: "360px",
+          height: "240px",
+          perspective: "1500px",
+        }}
+      >
         {/* BACK PART */}
-        <div style={{
-          position: "absolute",
-          inset: 0,
-          background: "linear-gradient(145deg, #ffffff, #f0f0f0)",
-          borderRadius: "10px",
-          boxShadow: "0 20px 40px rgba(0,0,0,0.4)",
-          zIndex: 1,
-          border: "1px solid #e0e0e0"
-        }} />
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: "linear-gradient(145deg, #ffffff, #ececec)",
+            borderRadius: "10px",
+            boxShadow: "0 15px 35px rgba(0,0,0,0.15)",
+            zIndex: 1,
+            border: "1px solid #dcdcdc",
+          }}
+        />
 
         {/* PAPER */}
         <motion.div
@@ -68,7 +77,8 @@ const Envelope = ({ onOpen, title, subtitle }) => {
             height: "210px",
             background: "#fff",
             borderRadius: "8px",
-            boxShadow: "0 5px 15px rgba(0,0,0,0.1), inset 0 0 20px rgba(0,0,0,0.02)",
+            boxShadow:
+              "0 5px 15px rgba(0,0,0,0.1), inset 0 0 20px rgba(0,0,0,0.02)",
             zIndex: 2,
             padding: "25px 20px",
             boxSizing: "border-box",
@@ -77,39 +87,80 @@ const Envelope = ({ onOpen, title, subtitle }) => {
             alignItems: "center",
             justifyContent: "center",
             textAlign: "center",
-            border: "1px solid #f0f0f0"
+            border: "1px solid #f0f0f0",
           }}
         >
-          <h2 style={{ color: "#2d3436", margin: "0 0 10px 0", fontSize: "1.2rem", borderBottom: "2px solid #6c5ce7", paddingBottom: "5px", width: "100%" }}>
+          <h2
+            style={{
+              color: "#2d3436",
+              margin: "0 0 10px 0",
+              fontSize: "1.2rem",
+              borderBottom: "2px solid #bdc3c7",
+              paddingBottom: "5px",
+              width: "100%",
+            }}
+          >
             Undangan Spesial
           </h2>
-          <p style={{ color: "#2d3436", fontSize: "0.9rem", lineHeight: 1.5, margin: 0, fontWeight: 600 }}>
+          <p
+            style={{
+              color: "#2d3436",
+              fontSize: "0.9rem",
+              lineHeight: 1.5,
+              margin: 0,
+              fontWeight: 600,
+            }}
+          >
             {title}
           </p>
-          <p style={{ color: "#636e72", fontSize: "0.75rem", marginTop: "10px" }}>
+          <p
+            style={{ color: "#636e72", fontSize: "0.75rem", marginTop: "10px" }}
+          >
             {subtitle}
           </p>
-          <div style={{ marginTop: "15px", color: "#6c5ce7", fontSize: "0.8rem", fontStyle: "italic" }}>
+          <div
+            style={{
+              marginTop: "15px",
+              color: "#95a5a6",
+              fontSize: "0.8rem",
+              fontStyle: "italic",
+            }}
+          >
             Tunggu sebentar...
           </div>
         </motion.div>
 
         {/* FRONT FLAPS */}
-        <div style={{
-          position: "absolute", inset: 0, zIndex: 4, borderRadius: "10px",
-          background: "linear-gradient(90deg, #fdfdfd, #f5f5f5)",
-          clipPath: "polygon(0 0, 50% 50%, 0 100%)",
-        }} />
-        <div style={{
-          position: "absolute", inset: 0, zIndex: 4, borderRadius: "10px",
-          background: "linear-gradient(-90deg, #fdfdfd, #f5f5f5)",
-          clipPath: "polygon(100% 0, 50% 50%, 100% 100%)",
-        }} />
-        <div style={{
-          position: "absolute", inset: 0, zIndex: 5, borderRadius: "10px",
-          background: "linear-gradient(0deg, #f5f5f5, #ffffff)",
-          clipPath: "polygon(0 100%, 50% 50%, 100% 100%)",
-        }} />
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 4,
+            borderRadius: "10px",
+            background: "linear-gradient(90deg, #ffffff, #f2f2f2)",
+            clipPath: "polygon(0 0, 50% 50%, 0 100%)",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 4,
+            borderRadius: "10px",
+            background: "linear-gradient(-90deg, #ffffff, #f2f2f2)",
+            clipPath: "polygon(100% 0, 50% 50%, 100% 100%)",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 5,
+            borderRadius: "10px",
+            background: "linear-gradient(0deg, #f2f2f2, #ffffff)",
+            clipPath: "polygon(0 100%, 50% 50%, 100% 100%)",
+          }}
+        />
 
         {/* TOP FLAP */}
         <motion.div
@@ -122,12 +173,12 @@ const Envelope = ({ onOpen, title, subtitle }) => {
             left: 0,
             width: "100%",
             height: "100%",
-            background: "linear-gradient(180deg, #ffffff, #f9f9f9)",
+            background: "linear-gradient(180deg, #ffffff, #ebebeb)",
             clipPath: "polygon(0 0, 100% 0, 50% 50%)",
             transformOrigin: "top center",
             zIndex: isOpen ? 1 : 6,
             borderRadius: "10px",
-            borderTop: "1px solid #f0f0f0"
+            borderTop: "1px solid #dcdcdc",
           }}
         />
 
@@ -135,9 +186,9 @@ const Envelope = ({ onOpen, title, subtitle }) => {
         <motion.div
           onClick={handleOpen}
           initial={{ rotate: 0, x: "-50%", y: "-50%", scale: 1 }}
-          animate={{ 
-            rotate: isOpen ? 720 : 0, 
-            x: isOpen ? "160px" : "-50%", 
+          animate={{
+            rotate: isOpen ? 720 : 0,
+            x: isOpen ? "160px" : "-50%",
             y: "-50%",
             scale: isOpen ? 0.7 : 1,
           }}
@@ -149,7 +200,8 @@ const Envelope = ({ onOpen, title, subtitle }) => {
             width: "70px",
             height: "70px",
             background: "radial-gradient(circle, #f1c40f, #f39c12)",
-            clipPath: "polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)",
+            clipPath:
+              "polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)",
             zIndex: 100,
             cursor: isOpening ? "default" : "pointer",
             filter: "drop-shadow(0 4px 10px rgba(0,0,0,0.3))",
