@@ -40,12 +40,26 @@ const CountdownUnit = ({ count, type }) => (
   </motion.div>
 );
 
-const Countdown = ({ targetDate }) => {
+const Countdown = ({ targetDate, autoUpdateDate }) => {
   const [timeLeft, setTimeLeft] = useState({});
 
   useEffect(() => {
     const calculateTimeLeft = () => {
-      const difference = +new Date(targetDate) - +new Date();
+      const isAuto = autoUpdateDate ?? true;
+      let effectiveTarget = targetDate;
+
+      if (isAuto) {
+        // Jika selalu update mengikuti hari, targetDate diatur ke akhir hari ini (23:59:59)
+        const now = new Date();
+        effectiveTarget = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate(),
+          23, 59, 59
+        );
+      }
+
+      const difference = +new Date(effectiveTarget) - +new Date();
       let timeLeft = {};
 
       if (difference > 0) {
@@ -62,12 +76,13 @@ const Countdown = ({ targetDate }) => {
       return timeLeft;
     };
 
+    setTimeLeft(calculateTimeLeft());
     const timer = setInterval(() => {
       setTimeLeft(calculateTimeLeft());
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [targetDate]);
+  }, [targetDate, autoUpdateDate]);
 
   return (
     <section className="container" style={{ textAlign: "center" }}>

@@ -25,6 +25,7 @@ import Timeline from "../Timeline";
 import Map from "../Map";
 import Footer from "../Footer";
 import { encodeData } from "../../utils/urlData";
+import { getTodayDateInfo } from "../../data";
 
 const SidebarLink = ({ icon: Icon, label, active, onClick }) => (
   <button
@@ -493,6 +494,72 @@ const Dashboard = ({ data, onUpdate }) => {
               >
                 <div
                   style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: "1rem",
+                    backgroundColor: (formData.autoUpdateDate ?? true) ? "rgba(108, 92, 231, 0.08)" : "#f8f9fa",
+                    borderRadius: "10px",
+                    border: (formData.autoUpdateDate ?? true) ? "1px solid #6c5ce7" : "1px solid #dfe6e9",
+                    marginBottom: "0.5rem"
+                  }}
+                >
+                  <div>
+                    <div style={{ fontWeight: 600, fontSize: "0.95rem", color: "#2d3436" }}>
+                      Selalu Update Mengikuti Hari Ini
+                    </div>
+                    <div style={{ fontSize: "0.8rem", color: "#636e72" }}>
+                      Tanggal & hari otomatis diperbarui mengikuti hari saat undangan dibuka.
+                    </div>
+                  </div>
+                  <label style={{ position: "relative", display: "inline-block", width: "48px", height: "26px", cursor: "pointer", flexShrink: 0 }}>
+                    <input
+                      type="checkbox"
+                      checked={formData.autoUpdateDate ?? true}
+                      onChange={(e) => {
+                        const isChecked = e.target.checked;
+                        const updated = { ...formData, autoUpdateDate: isChecked };
+                        if (isChecked) {
+                          const today = getTodayDateInfo();
+                          updated.event = { ...updated.event, day: today.day, date: today.date };
+                          updated.targetDate = today.targetDate;
+                        }
+                        setFormData(updated);
+                        onUpdate(updated);
+                      }}
+                      style={{ opacity: 0, width: 0, height: 0 }}
+                    />
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        backgroundColor: (formData.autoUpdateDate ?? true) ? "#6c5ce7" : "#ccc",
+                        transition: "0.3s",
+                        borderRadius: "34px",
+                      }}
+                    >
+                      <span
+                        style={{
+                          position: "absolute",
+                          content: '""',
+                          height: "20px",
+                          width: "20px",
+                          left: (formData.autoUpdateDate ?? true) ? "24px" : "3px",
+                          bottom: "3px",
+                          backgroundColor: "white",
+                          transition: "0.3s",
+                          borderRadius: "50%",
+                        }}
+                      />
+                    </span>
+                  </label>
+                </div>
+
+                <div
+                  style={{
                     display: "grid",
                     gridTemplateColumns:
                       window.innerWidth < 768 ? "1fr" : "1fr 1fr",
@@ -500,7 +567,7 @@ const Dashboard = ({ data, onUpdate }) => {
                   }}
                 >
                   <InputField
-                    label="Hari"
+                    label={formData.autoUpdateDate ?? true ? "Hari (Otomatis)" : "Hari"}
                     value={formData.event.day}
                     onChange={(e) =>
                       handleChange("event", "day", e.target.value)
@@ -508,12 +575,12 @@ const Dashboard = ({ data, onUpdate }) => {
                     placeholder="Sabtu"
                   />
                   <InputField
-                    label="Tanggal"
+                    label={formData.autoUpdateDate ?? true ? "Tanggal (Otomatis)" : "Tanggal"}
                     value={formData.event.date}
                     onChange={(e) =>
                       handleChange("event", "date", e.target.value)
                     }
-                    placeholder="17 Oktober 2026"
+                    placeholder="21 November 2026"
                   />
                 </div>
                 <InputField
@@ -535,7 +602,7 @@ const Dashboard = ({ data, onUpdate }) => {
                 <InputField
                   label="Target Date (Countdown)"
                   type="datetime-local"
-                  value={formData.targetDate.substring(0, 16)}
+                  value={formData.targetDate ? formData.targetDate.substring(0, 16) : ""}
                   onChange={(e) =>
                     handleChange(null, "targetDate", e.target.value)
                   }
@@ -740,8 +807,14 @@ const Dashboard = ({ data, onUpdate }) => {
                 subtitle={formData.hero.subtitle}
                 imageUrl={formData.hero.imageUrl}
               />
-              <Countdown targetDate={formData.targetDate} />
-              <EventInfo eventData={formData.event} />
+              <Countdown 
+                targetDate={formData.targetDate} 
+                autoUpdateDate={formData.autoUpdateDate} 
+              />
+              <EventInfo 
+                eventData={formData.event} 
+                autoUpdateDate={formData.autoUpdateDate} 
+              />
               <Timeline agenda={formData.agenda} />
               <Map location={formData.location} />
               <Footer contact={formData.contact} />

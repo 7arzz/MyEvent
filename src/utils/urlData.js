@@ -49,7 +49,8 @@ const KEY_MAP = {
   event: 'e', day: 'd', date: 'dt', time: 'tm', locationName: 'ln',
   targetDate: 'td', agenda: 'a',
   location: 'l', address: 'ad', mapUrl: 'mu', embedUrl: 'eu',
-  contact: 'c', email: 'em', phone: 'ph', instagram: 'ig', facebook: 'fb'
+  contact: 'c', email: 'em', phone: 'ph', instagram: 'ig', facebook: 'fb',
+  autoUpdateDate: 'aud'
 };
 
 

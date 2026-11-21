@@ -22,7 +22,6 @@ const Home = ({ data }) => {
             sealUrl={data.hero.sealUrl}
           />
         )}
-
       </AnimatePresence>
       
       {opened && (
@@ -33,9 +32,15 @@ const Home = ({ data }) => {
             imageUrl={data.hero.imageUrl}
           />
 
-          <Countdown targetDate={data.targetDate} />
+          <Countdown 
+            targetDate={data.targetDate} 
+            autoUpdateDate={data.autoUpdateDate} 
+          />
 
-          <EventInfo eventData={data.event} />
+          <EventInfo 
+            eventData={data.event} 
+            autoUpdateDate={data.autoUpdateDate} 
+          />
 
           <Timeline agenda={data.agenda} />
 
