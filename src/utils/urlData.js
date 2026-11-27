@@ -68,11 +68,28 @@ const transformKeys = (obj, map) => {
 export const encodeData = (data) => {
   try {
     let processedData = pruneDefaults(data, DEFAULT_INVITATION_DATA);
+    // Always preserve explicit event date & countdown fields so links never drift on future days
+    if (!data.autoUpdateDate) {
+      processedData.autoUpdateDate = false;
+      if (data.targetDate) processedData.targetDate = data.targetDate;
+      if (data.event?.day || data.event?.date) {
+        processedData.event = {
+          ...(processedData.event || {}),
+          day: data.event.day,
+          date: data.event.date,
+        };
+      }
+    } else {
+      processedData.autoUpdateDate = true;
+    }
+
     if (processedData.agenda) processedData.agenda = compactAgenda(processedData.agenda);
     
-    // Date optimization: If it's a standard ISO string, we can shorten it
+    // Date optimization: strip trailing ':00' seconds only (keep HH:mm intact)
     if (processedData.targetDate) {
-      processedData.targetDate = processedData.targetDate.replace(/:00$/, '').replace('T', ' ');
+      processedData.targetDate = processedData.targetDate
+        .replace(/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}):00$/, '$1 $2')
+        .replace('T', ' ');
     }
 
     const shortData = transformKeys(processedData, KEY_MAP);
@@ -117,9 +134,12 @@ export const decodeData = (encodedData) => {
     let processedData = transformKeys(shortData, REVERSE_MAP);
     
     if (processedData.agenda) processedData.agenda = expandAgenda(processedData.agenda);
-    // Restore date format if needed
+    // Restore ISO datetime format accurately
     if (processedData.targetDate && processedData.targetDate.includes(' ')) {
-        processedData.targetDate = processedData.targetDate.replace(' ', 'T') + ':00';
+      processedData.targetDate = processedData.targetDate.replace(' ', 'T');
+      if (/^\d{4}-\d{2}-\d{2}T\d{2}$/.test(processedData.targetDate)) {
+        processedData.targetDate += ':00';
+      }
     }
 
     return mergeDefaults(processedData, DEFAULT_INVITATION_DATA);

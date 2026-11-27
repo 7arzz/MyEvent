@@ -15,15 +15,15 @@ const Home = ({ data }) => {
     <div className="app-container">
       <AnimatePresence>
         {!opened && (
-          <Envelope 
-            onOpen={() => setOpened(true)} 
-            title={data.hero.title} 
+          <Envelope
+            onOpen={() => setOpened(true)}
+            title={data.hero.title}
             subtitle={data.hero.subtitle}
             sealUrl={data.hero.sealUrl}
           />
         )}
       </AnimatePresence>
-      
+
       {opened && (
         <React.Fragment>
           <Hero
@@ -32,14 +32,14 @@ const Home = ({ data }) => {
             imageUrl={data.hero.imageUrl}
           />
 
-          <Countdown 
-            targetDate={data.targetDate} 
-            autoUpdateDate={data.autoUpdateDate} 
+          <Countdown
+            targetDate={data.targetDate}
+            autoUpdateDate={data.autoUpdateDate}
           />
 
-          <EventInfo 
-            eventData={data.event} 
-            autoUpdateDate={data.autoUpdateDate} 
+          <EventInfo
+            eventData={data.event}
+            autoUpdateDate={data.autoUpdateDate}
           />
 
           <Timeline agenda={data.agenda} />

@@ -64,7 +64,7 @@ const EventInfo = ({ eventData, autoUpdateDate }) => {
     return () => clearInterval(interval);
   }, []);
 
-  const shouldAutoUpdate = autoUpdateDate ?? eventData?.autoUpdateDate ?? true;
+  const shouldAutoUpdate = Boolean(autoUpdateDate ?? eventData?.autoUpdateDate);
 
   const day = shouldAutoUpdate
     ? currentDateInfo.day

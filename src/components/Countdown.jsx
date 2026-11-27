@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { parseIndonesianDate, parseTargetDate } from "../data";
 
 const CountdownUnit = ({ count, type }) => (
   <motion.div
@@ -24,7 +25,7 @@ const CountdownUnit = ({ count, type }) => (
         color: "var(--primary)",
       }}
     >
-      {count !== undefined ? count : "00"}
+      {count !== undefined ? String(count).padStart(2, "0") : "00"}
     </div>
     <div
       style={{
@@ -40,49 +41,64 @@ const CountdownUnit = ({ count, type }) => (
   </motion.div>
 );
 
-const Countdown = ({ targetDate, autoUpdateDate }) => {
-  const [timeLeft, setTimeLeft] = useState({});
+const resolveTargetDate = (targetDate, eventData, autoUpdateDate) => {
+  if (autoUpdateDate === true) {
+    const now = new Date();
+    return new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      23,
+      59,
+      59
+    );
+  }
+
+  const parsedTarget = parseTargetDate(targetDate);
+  if (parsedTarget) {
+    return parsedTarget;
+  }
+
+  const parsedFromEvent = parseIndonesianDate(eventData?.date, eventData?.time);
+  if (parsedFromEvent) {
+    return parsedFromEvent;
+  }
+
+  return null;
+};
+
+const computeTimeLeft = (targetDate, eventData, autoUpdateDate) => {
+  const effectiveTarget = resolveTargetDate(targetDate, eventData, autoUpdateDate);
+  if (!effectiveTarget) {
+    return { hari: 0, jam: 0, menit: 0, detik: 0 };
+  }
+
+  const difference = effectiveTarget.getTime() - Date.now();
+  if (difference <= 0) {
+    return { hari: 0, jam: 0, menit: 0, detik: 0 };
+  }
+
+  return {
+    hari: Math.floor(difference / (1000 * 60 * 60 * 24)),
+    jam: Math.floor((difference / (1000 * 60 * 60)) % 24),
+    menit: Math.floor((difference / (1000 * 60)) % 60),
+    detik: Math.floor((difference / 1000) % 60),
+  };
+};
+
+const Countdown = ({ targetDate, eventData, autoUpdateDate }) => {
+  const [timeLeft, setTimeLeft] = useState(() =>
+    computeTimeLeft(targetDate, eventData, autoUpdateDate)
+  );
 
   useEffect(() => {
-    const calculateTimeLeft = () => {
-      const isAuto = autoUpdateDate ?? true;
-      let effectiveTarget = targetDate;
-
-      if (isAuto) {
-        // Jika selalu update mengikuti hari, targetDate diatur ke akhir hari ini (23:59:59)
-        const now = new Date();
-        effectiveTarget = new Date(
-          now.getFullYear(),
-          now.getMonth(),
-          now.getDate(),
-          23, 59, 59
-        );
-      }
-
-      const difference = +new Date(effectiveTarget) - +new Date();
-      let timeLeft = {};
-
-      if (difference > 0) {
-        timeLeft = {
-          hari: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          jam: Math.floor((difference / (1000 * 60 * 60)) % 24),
-          menit: Math.floor((difference / 1000 / 60) % 60),
-          detik: Math.floor((difference / 1000) % 60),
-        };
-      } else {
-        timeLeft = { hari: 0, jam: 0, menit: 0, detik: 0 };
-      }
-
-      return timeLeft;
-    };
-
-    setTimeLeft(calculateTimeLeft());
+    setTimeLeft(computeTimeLeft(targetDate, eventData, autoUpdateDate));
     const timer = setInterval(() => {
-      setTimeLeft(calculateTimeLeft());
+      setTimeLeft(computeTimeLeft(targetDate, eventData, autoUpdateDate));
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [targetDate, autoUpdateDate]);
+  }, [targetDate, eventData?.date, eventData?.time, autoUpdateDate]);
 
   return (
     <section className="container" style={{ textAlign: "center" }}>

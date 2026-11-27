@@ -25,7 +25,13 @@ import Timeline from "../Timeline";
 import Map from "../Map";
 import Footer from "../Footer";
 import { encodeData } from "../../utils/urlData";
-import { getTodayDateInfo } from "../../data";
+import {
+  getTodayDateInfo,
+  formatEventDateInfo,
+  parseIndonesianDate,
+  parseTargetDate,
+  parseTimeFromEventTime,
+} from "../../data";
 
 const SidebarLink = ({ icon: Icon, label, active, onClick }) => (
   <button
@@ -498,9 +504,9 @@ const Dashboard = ({ data, onUpdate }) => {
                     alignItems: "center",
                     justifyContent: "space-between",
                     padding: "1rem",
-                    backgroundColor: (formData.autoUpdateDate ?? true) ? "rgba(108, 92, 231, 0.08)" : "#f8f9fa",
+                    backgroundColor: Boolean(formData.autoUpdateDate) ? "rgba(108, 92, 231, 0.08)" : "#f8f9fa",
                     borderRadius: "10px",
-                    border: (formData.autoUpdateDate ?? true) ? "1px solid #6c5ce7" : "1px solid #dfe6e9",
+                    border: Boolean(formData.autoUpdateDate) ? "1px solid #6c5ce7" : "1px solid #dfe6e9",
                     marginBottom: "0.5rem"
                   }}
                 >
@@ -515,7 +521,7 @@ const Dashboard = ({ data, onUpdate }) => {
                   <label style={{ position: "relative", display: "inline-block", width: "48px", height: "26px", cursor: "pointer", flexShrink: 0 }}>
                     <input
                       type="checkbox"
-                      checked={formData.autoUpdateDate ?? true}
+                      checked={Boolean(formData.autoUpdateDate)}
                       onChange={(e) => {
                         const isChecked = e.target.checked;
                         const updated = { ...formData, autoUpdateDate: isChecked };
@@ -523,6 +529,13 @@ const Dashboard = ({ data, onUpdate }) => {
                           const today = getTodayDateInfo();
                           updated.event = { ...updated.event, day: today.day, date: today.date };
                           updated.targetDate = today.targetDate;
+                        } else {
+                          const parsed = parseIndonesianDate(updated.event.date, updated.event.time);
+                          if (parsed) {
+                            const info = formatEventDateInfo(parsed);
+                            updated.event = { ...updated.event, day: info.day };
+                            updated.targetDate = info.targetDate;
+                          }
                         }
                         setFormData(updated);
                         onUpdate(updated);
@@ -536,7 +549,7 @@ const Dashboard = ({ data, onUpdate }) => {
                         left: 0,
                         right: 0,
                         bottom: 0,
-                        backgroundColor: (formData.autoUpdateDate ?? true) ? "#6c5ce7" : "#ccc",
+                        backgroundColor: Boolean(formData.autoUpdateDate) ? "#6c5ce7" : "#ccc",
                         transition: "0.3s",
                         borderRadius: "34px",
                       }}
@@ -547,7 +560,7 @@ const Dashboard = ({ data, onUpdate }) => {
                           content: '""',
                           height: "20px",
                           width: "20px",
-                          left: (formData.autoUpdateDate ?? true) ? "24px" : "3px",
+                          left: Boolean(formData.autoUpdateDate) ? "24px" : "3px",
                           bottom: "3px",
                           backgroundColor: "white",
                           transition: "0.3s",
@@ -567,28 +580,70 @@ const Dashboard = ({ data, onUpdate }) => {
                   }}
                 >
                   <InputField
-                    label={formData.autoUpdateDate ?? true ? "Hari (Otomatis)" : "Hari"}
+                    label={Boolean(formData.autoUpdateDate) ? "Hari (Otomatis)" : "Hari"}
                     value={formData.event.day}
-                    onChange={(e) =>
-                      handleChange("event", "day", e.target.value)
-                    }
-                    placeholder="Sabtu"
+                    onChange={(e) => {
+                      const updated = {
+                        ...formData,
+                        autoUpdateDate: false,
+                        event: { ...formData.event, day: e.target.value },
+                      };
+                      setFormData(updated);
+                      onUpdate(updated);
+                    }}
+                    placeholder="Jumat"
                   />
                   <InputField
-                    label={formData.autoUpdateDate ?? true ? "Tanggal (Otomatis)" : "Tanggal"}
+                    label={Boolean(formData.autoUpdateDate) ? "Tanggal (Otomatis)" : "Tanggal Acara"}
                     value={formData.event.date}
-                    onChange={(e) =>
-                      handleChange("event", "date", e.target.value)
-                    }
-                    placeholder="21 November 2026"
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      const updated = {
+                        ...formData,
+                        autoUpdateDate: false,
+                        event: { ...formData.event, date: val },
+                      };
+                      const parsed = parseIndonesianDate(val, formData.event.time);
+                      if (parsed) {
+                        const info = formatEventDateInfo(parsed);
+                        updated.event.day = info.day;
+                        updated.targetDate = info.targetDate;
+                      }
+                      setFormData(updated);
+                      onUpdate(updated);
+                    }}
+                    placeholder="25 Desember 2026"
                   />
                 </div>
                 <InputField
                   label="Jam"
                   value={formData.event.time}
-                  onChange={(e) =>
-                    handleChange("event", "time", e.target.value)
-                  }
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    const updated = {
+                      ...formData,
+                      event: { ...formData.event, time: val },
+                    };
+                    if (!updated.autoUpdateDate) {
+                      const baseDate =
+                        parseTargetDate(formData.targetDate) ||
+                        parseIndonesianDate(formData.event.date, val);
+                      if (baseDate) {
+                        const { hours, minutes } = parseTimeFromEventTime(val);
+                        const synced = new Date(
+                          baseDate.getFullYear(),
+                          baseDate.getMonth(),
+                          baseDate.getDate(),
+                          hours,
+                          minutes,
+                          0
+                        );
+                        updated.targetDate = formatEventDateInfo(synced).targetDate;
+                      }
+                    }
+                    setFormData(updated);
+                    onUpdate(updated);
+                  }}
                   placeholder="09:00 - Selesai"
                 />
                 <TextAreaField
@@ -600,15 +655,31 @@ const Dashboard = ({ data, onUpdate }) => {
                   placeholder="Gedung XYZ..."
                 />
                 <InputField
-                  label="Target Date (Countdown)"
+                  label="Tanggal & Waktu Hitung Mundur (Countdown)"
                   type="datetime-local"
                   value={formData.targetDate ? formData.targetDate.substring(0, 16) : ""}
-                  onChange={(e) =>
-                    handleChange(null, "targetDate", e.target.value)
-                  }
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    const updated = {
+                      ...formData,
+                      autoUpdateDate: false,
+                      targetDate: val,
+                    };
+                    const parsed = parseTargetDate(val);
+                    if (parsed) {
+                      const info = formatEventDateInfo(parsed);
+                      updated.event = {
+                        ...updated.event,
+                        day: info.day,
+                        date: info.date,
+                      };
+                    }
+                    setFormData(updated);
+                    onUpdate(updated);
+                  }}
                 />
                 <p style={{ fontSize: "0.75rem", color: "#636e72" }}>
-                  *Target date digunakan untuk sistem hitung mundur real-time.
+                  *Otomatis tersinkronisasi dengan Tanggal Acara untuk menghitung mundur hari, jam, menit, dan detik dari sekarang hingga waktu acara.
                 </p>
               </FormSection>
 
@@ -809,6 +880,7 @@ const Dashboard = ({ data, onUpdate }) => {
               />
               <Countdown 
                 targetDate={formData.targetDate} 
+                eventData={formData.event}
                 autoUpdateDate={formData.autoUpdateDate} 
               />
               <EventInfo 
