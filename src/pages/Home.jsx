@@ -34,12 +34,11 @@ const Home = ({ data }) => {
 
           <Countdown
             targetDate={data.targetDate}
-            autoUpdateDate={data.autoUpdateDate}
+            eventData={data.event}
           />
 
           <EventInfo
             eventData={data.event}
-            autoUpdateDate={data.autoUpdateDate}
           />
 
           <Timeline agenda={data.agenda} />

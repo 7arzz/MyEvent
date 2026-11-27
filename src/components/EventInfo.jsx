@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Calendar, Clock, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
-import { getTodayDateInfo } from "../data";
+import { DEFAULT_INVITATION_DATA } from "../data";
 
 const InfoCard = ({ icon: Icon, title, content, delay }) => (
   <motion.div
@@ -51,27 +51,9 @@ const InfoCard = ({ icon: Icon, title, content, delay }) => (
   </motion.div>
 );
 
-const EventInfo = ({ eventData, autoUpdateDate }) => {
-  const [currentDateInfo, setCurrentDateInfo] = useState(() =>
-    getTodayDateInfo(),
-  );
-
-  useEffect(() => {
-    // Perbarui tanggal secara berkala jika aktif
-    const interval = setInterval(() => {
-      setCurrentDateInfo(getTodayDateInfo());
-    }, 10000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const shouldAutoUpdate = Boolean(autoUpdateDate ?? eventData?.autoUpdateDate);
-
-  const day = shouldAutoUpdate
-    ? currentDateInfo.day
-    : eventData?.day || currentDateInfo.day;
-  const date = shouldAutoUpdate
-    ? currentDateInfo.date
-    : eventData?.date || currentDateInfo.date;
+const EventInfo = ({ eventData }) => {
+  const day = eventData?.day || DEFAULT_INVITATION_DATA.event.day;
+  const date = eventData?.date || DEFAULT_INVITATION_DATA.event.date;
   const time = eventData?.time || "09:00 - 15:00 WIB";
   const locationName =
     eventData?.locationName || "Gedung Grand Palace\nHall Utama, Lantai 2";

@@ -68,19 +68,15 @@ const transformKeys = (obj, map) => {
 export const encodeData = (data) => {
   try {
     let processedData = pruneDefaults(data, DEFAULT_INVITATION_DATA);
+    delete processedData.autoUpdateDate;
     // Always preserve explicit event date & countdown fields so links never drift on future days
-    if (!data.autoUpdateDate) {
-      processedData.autoUpdateDate = false;
-      if (data.targetDate) processedData.targetDate = data.targetDate;
-      if (data.event?.day || data.event?.date) {
-        processedData.event = {
-          ...(processedData.event || {}),
-          day: data.event.day,
-          date: data.event.date,
-        };
-      }
-    } else {
-      processedData.autoUpdateDate = true;
+    if (data.targetDate) processedData.targetDate = data.targetDate;
+    if (data.event?.day || data.event?.date) {
+      processedData.event = {
+        ...(processedData.event || {}),
+        day: data.event.day,
+        date: data.event.date,
+      };
     }
 
     if (processedData.agenda) processedData.agenda = compactAgenda(processedData.agenda);

@@ -159,17 +159,6 @@ export const parseIndonesianDate = (dateStr, timeStr) => {
   return null;
 };
 
-export const getTodayDateInfo = (date = new Date()) => {
-  const day = INDONESIAN_DAYS[date.getDay()];
-  const dateStr = `${date.getDate()} ${INDONESIAN_MONTHS[date.getMonth()]} ${date.getFullYear()}`;
-  const yyyy = date.getFullYear();
-  const mm = String(date.getMonth() + 1).padStart(2, "0");
-  const dd = String(date.getDate()).padStart(2, "0");
-  const targetDate = `${yyyy}-${mm}-${dd}T23:59:59`;
-
-  return { day, date: dateStr, targetDate };
-};
-
 export const getDefaultInvitationData = () => {
   const now = new Date();
   const defaultEventDate = new Date(
@@ -187,7 +176,6 @@ export const getDefaultInvitationData = () => {
       title: "Undangan Digital Premium",
       subtitle: "Merayakan Kebersamaan di Hari Istimewa Kita",
     },
-    autoUpdateDate: false,
     event: {
       day: eventInfo.day,
       date: eventInfo.date,

@@ -41,19 +41,7 @@ const CountdownUnit = ({ count, type }) => (
   </motion.div>
 );
 
-const resolveTargetDate = (targetDate, eventData, autoUpdateDate) => {
-  if (autoUpdateDate === true) {
-    const now = new Date();
-    return new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-      23,
-      59,
-      59
-    );
-  }
-
+const resolveTargetDate = (targetDate, eventData) => {
   const parsedTarget = parseTargetDate(targetDate);
   if (parsedTarget) {
     return parsedTarget;
@@ -67,8 +55,8 @@ const resolveTargetDate = (targetDate, eventData, autoUpdateDate) => {
   return null;
 };
 
-const computeTimeLeft = (targetDate, eventData, autoUpdateDate) => {
-  const effectiveTarget = resolveTargetDate(targetDate, eventData, autoUpdateDate);
+const computeTimeLeft = (targetDate, eventData) => {
+  const effectiveTarget = resolveTargetDate(targetDate, eventData);
   if (!effectiveTarget) {
     return { hari: 0, jam: 0, menit: 0, detik: 0 };
   }
@@ -86,19 +74,19 @@ const computeTimeLeft = (targetDate, eventData, autoUpdateDate) => {
   };
 };
 
-const Countdown = ({ targetDate, eventData, autoUpdateDate }) => {
+const Countdown = ({ targetDate, eventData }) => {
   const [timeLeft, setTimeLeft] = useState(() =>
-    computeTimeLeft(targetDate, eventData, autoUpdateDate)
+    computeTimeLeft(targetDate, eventData)
   );
 
   useEffect(() => {
-    setTimeLeft(computeTimeLeft(targetDate, eventData, autoUpdateDate));
+    setTimeLeft(computeTimeLeft(targetDate, eventData));
     const timer = setInterval(() => {
-      setTimeLeft(computeTimeLeft(targetDate, eventData, autoUpdateDate));
+      setTimeLeft(computeTimeLeft(targetDate, eventData));
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [targetDate, eventData?.date, eventData?.time, autoUpdateDate]);
+  }, [targetDate, eventData?.date, eventData?.time]);
 
   return (
     <section className="container" style={{ textAlign: "center" }}>
